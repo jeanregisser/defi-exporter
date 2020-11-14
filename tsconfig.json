@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2019", "DOM", "DOM.Iterable"],
+    "module": "commonjs",
+    "target": "ES2019",
+    "rootDir": "src",
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "strict": true
+  }
+}
