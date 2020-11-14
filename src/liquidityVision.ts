@@ -84,7 +84,7 @@ function parseNumericValue(value: string) {
 }
 
 function convertToPromMetricName(value: string) {
-  return `liquidityvision_${snakeCase(value).replace("_h_", "h_")}`;
+  return `apyvision_${snakeCase(value).replace("_h_", "h_")}`;
 }
 
 export async function liquidityVisionHandler(req: Request, res: Response) {
