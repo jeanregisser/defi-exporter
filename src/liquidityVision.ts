@@ -96,7 +96,7 @@ export async function liquidityVisionHandler(req: Request, res: Response) {
 
   const rawData: LiquidityVisionResponse.Root = await got(url).json();
 
-  console.log("==result", rawData);
+  // console.log("==result", rawData);
 
   const summaryMetrics = getMetrics(rawData, {
     keys: ["totalValueUsd", "totalFeeUsd", "netGainUsd", "netGainPct"],
@@ -122,7 +122,7 @@ export async function liquidityVisionHandler(req: Request, res: Response) {
 
   const promMetrics = [...summaryMetrics, ...poolsMetrics];
 
-  console.log("==done");
+  // console.log("==done");
 
   res.send(promMetrics.join("\n"));
 }

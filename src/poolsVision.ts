@@ -38,21 +38,21 @@ export async function poolsVisionHandler(req: Request, res: Response) {
 
   const page = await browser.newPage();
 
-  console.log("==goto", url);
+  // console.log("==goto", url);
 
   await page.goto(url, { waitUntil: "networkidle2" });
 
   await page.waitForSelector("tbody > tr > td > a");
 
-  console.log("==done waiting");
+  // console.log("==done waiting");
 
   const balancerMetrics = await extractBalancerMetrics(page);
   const userPoolMetrics = await extractUserPoolMetrics(page, address);
 
   const promMetrics = [...balancerMetrics, ...userPoolMetrics];
-  console.log("==promMetrics", promMetrics);
+  // console.log("==promMetrics", promMetrics);
 
-  console.log("==done");
+  // console.log("==done");
 
   await browser.close();
 
@@ -134,8 +134,8 @@ async function extractUserPoolMetrics(page: puppeteer.Page, address: string) {
     poolProviderCount: parseNumericValue(row.poolProviderCount),
   }));
 
-  console.log("==rows", rows);
-  console.log("==processedRows", processedRows);
+  // console.log("==rows", rows);
+  // console.log("==processedRows", processedRows);
 
   const promMetrics: string[] = [];
   processedRows.forEach((row) => {
@@ -199,7 +199,7 @@ async function extractBalancerMetrics(page: puppeteer.Page) {
 
   const processedData = mapValues(rawData, parseNumericValue);
 
-  console.log("==processedData", processedData);
+  // console.log("==processedData", processedData);
 
   const labels = {};
   const formattedLabels = Object.entries(labels)
