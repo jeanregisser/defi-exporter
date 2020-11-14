@@ -146,7 +146,7 @@ async function extractUserPoolMetrics(page: puppeteer.Page, address: string) {
     };
 
     const formattedLabels = Object.entries(labels)
-      .map(([key, value]) => `${key}:"${value}"`)
+      .map(([key, value]) => `${key}="${value}"`)
       .join(",");
     const filteredKeys = new Set(["id", "link", "name"]);
 
@@ -203,7 +203,7 @@ async function extractBalancerMetrics(page: puppeteer.Page) {
 
   const labels = {};
   const formattedLabels = Object.entries(labels)
-    .map(([key, value]) => `${key}:"${value}"`)
+    .map(([key, value]) => `${key}="${value}"`)
     .join(",");
 
   return Object.entries(processedData).map(([key, value]) => {

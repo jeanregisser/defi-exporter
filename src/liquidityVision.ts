@@ -3,7 +3,7 @@ import BigNumber from "bignumber.js";
 import snakeCase from "lodash.snakecase";
 import mapValues from "lodash.mapvalues";
 import got from "got";
-import { formatPrometheusLabels } from "./utils";
+import { formatPrometheusLabels, isPresent } from "./utils";
 
 namespace LiquidityVisionResponse {
   export interface Root {
@@ -166,11 +166,13 @@ function getMetricsFromObject<T>(
   });
 
   const keysSet = new Set(keys);
-  return Object.entries(val).map(([key, value]) => {
-    if (!keysSet.has(key as keyof T)) {
-      return null;
-    }
-    const formattedKey = convertToPromMetricName(key);
-    return `${formattedKey}\{${formattedLabels}\} ${value}`;
-  });
+  return Object.entries(val)
+    .map(([key, value]) => {
+      if (!keysSet.has(key as keyof T)) {
+        return null;
+      }
+      const formattedKey = convertToPromMetricName(key);
+      return `${formattedKey}\{${formattedLabels}\} ${value}`;
+    })
+    .filter(isPresent);
 }
