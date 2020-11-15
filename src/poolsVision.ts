@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
 import puppeteer from "puppeteer";
-import BigNumber from "bignumber.js";
 import snakeCase from "lodash.snakecase";
 import mapValues from "lodash.mapvalues";
+import { getMetrics, parseNumericValue } from "./utils";
 
-function parseNumericValue(value: string) {
-  return new BigNumber(value.replace(/[^0-9\.-]+/g, "")).toString();
-}
+const NAMESPACE = "poolsvision";
 
 function convertToPromMetricName(value: string) {
   return `poolsvision_${snakeCase(value).replace("_h_", "h_")}`;
@@ -134,31 +132,25 @@ async function extractUserPoolMetrics(page: puppeteer.Page, address: string) {
     poolProviderCount: parseNumericValue(row.poolProviderCount),
   }));
 
-  // console.log("==rows", rows);
-  // console.log("==processedRows", processedRows);
-
-  const promMetrics: string[] = [];
-  processedRows.forEach((row) => {
-    const labels = {
-      poolId: row.id,
-      name: row.name,
-      address,
-    };
-
-    const formattedLabels = Object.entries(labels)
-      .map(([key, value]) => `${key}="${value}"`)
-      .join(",");
-    const filteredKeys = new Set(["id", "link", "name"]);
-
-    for (const key of Object.keys(row).filter(
-      (key) => !filteredKeys.has(key)
-    ) as Array<keyof typeof row>) {
-      const formattedKey = convertToPromMetricName(key);
-      promMetrics.push(`${formattedKey}\{${formattedLabels}\} ${row[key]}`);
-    }
+  return getMetrics(processedRows, {
+    namespace: NAMESPACE,
+    keys: [
+      "swapFeePercent",
+      "totalLiquidityUsd",
+      "totalLiquidityAdjustedUsd",
+      "volume24hUsd",
+      "fees24hUsd",
+      "annualBal",
+      "totalLiquidityAdjustedUsd",
+      "userPoolPercent",
+      "poolProviderCount",
+    ],
+    labels: { address },
+    labelMappings: {
+      id: "poolAddress",
+      name: "poolName",
+    },
   });
-
-  return promMetrics;
 }
 
 async function extractBalancerMetrics(page: puppeteer.Page) {
@@ -199,15 +191,16 @@ async function extractBalancerMetrics(page: puppeteer.Page) {
 
   const processedData = mapValues(rawData, parseNumericValue);
 
-  // console.log("==processedData", processedData);
-
-  const labels = {};
-  const formattedLabels = Object.entries(labels)
-    .map(([key, value]) => `${key}="${value}"`)
-    .join(",");
-
-  return Object.entries(processedData).map(([key, value]) => {
-    const formattedKey = convertToPromMetricName(key);
-    return `${formattedKey}\{${formattedLabels}\} ${value}`;
+  return getMetrics(processedData, {
+    namespace: NAMESPACE,
+    keys: [
+      "balPriceUsd",
+      "volume24hUsd",
+      "fees24hUsd",
+      "totalLiquidityUsd",
+      "totalLiquidityAdjustedUsd",
+      "totalLiquidityAdjustedWithStakingUsd",
+      "balMultiplier",
+    ],
   });
 }
