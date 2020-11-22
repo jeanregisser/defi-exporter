@@ -6,7 +6,9 @@ import { poolsVisionHandler } from "./poolsVision";
 const port = process.env.PORT || 3000;
 
 const server = fastify({
-  logger: true,
+  logger: {
+    prettyPrint: process.env.NODE_ENV !== "production",
+  },
 });
 
 server.get("/poolsVision", poolsVisionHandler);
@@ -18,5 +20,5 @@ server.listen(port, (err) => {
     console.error(err);
     process.exit(1);
   }
-  // console.log(`Server listening at ${address}`);
+  server.log.info(`Routes:\n${server.printRoutes()}`);
 });

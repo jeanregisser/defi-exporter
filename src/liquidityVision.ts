@@ -91,7 +91,7 @@ export async function liquidityVisionHandler(req: CustomRequest) {
 
   const rawData: LiquidityVisionResponse.Root = await got(url).json();
 
-  // console.log("==result", rawData);
+  // req.log.info("==result", rawData);
 
   const summaryMetrics = getMetrics(rawData, {
     namespace: NAMESPACE,
@@ -119,7 +119,7 @@ export async function liquidityVisionHandler(req: CustomRequest) {
 
   const promMetrics = [...summaryMetrics, ...poolsMetrics];
 
-  // console.log("==done");
+  // req.log.info("==done");
 
   return promMetrics.join("\n");
 }

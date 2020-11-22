@@ -17,27 +17,26 @@ export async function poolsVisionHandler(req: CustomRequest) {
   const url = `http://pools.vision/user/${address}`;
 
   const browser = await puppeteerLaunch();
-  const page = await browser.newPage();
 
-  // console.log("==goto", url);
+  try {
+    const page = await browser.newPage();
 
-  await page.goto(url, { waitUntil: "networkidle2" });
+    req.log.info("opening %s", url);
 
-  await page.waitForSelector("tbody > tr > td > a2");
+    await page.goto(url, { waitUntil: "networkidle2" });
 
-  // console.log("==done waiting");
+    await page.waitForSelector("tbody > tr > td > a");
 
-  const balancerMetrics = await extractBalancerMetrics(page);
-  const userPoolMetrics = await extractUserPoolMetrics(page, address);
+    req.log.info("done waiting");
 
-  const promMetrics = [...balancerMetrics, ...userPoolMetrics];
-  // console.log("==promMetrics", promMetrics);
+    const balancerMetrics = await extractBalancerMetrics(page);
+    const userPoolMetrics = await extractUserPoolMetrics(page, address);
 
-  // console.log("==done");
-
-  await browser.close();
-
-  return promMetrics.join("\n");
+    const promMetrics = [...balancerMetrics, ...userPoolMetrics];
+    return promMetrics.join("\n");
+  } finally {
+    await browser.close();
+  }
 }
 
 async function extractUserPoolMetrics(page: puppeteer.Page, address: string) {

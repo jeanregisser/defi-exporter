@@ -1,4 +1,4 @@
-import { FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import puppeteer from "puppeteer";
 import mapValues from "lodash.mapvalues";
 import { getMetrics, parseNumericValue, puppeteerLaunch } from "./utils";
@@ -19,7 +19,7 @@ function customParseNumericValue(value: string | undefined) {
   return result.toString();
 }
 
-export async function feesWtfHandler(req: CustomRequest) {
+export async function feesWtfHandler(req: CustomRequest, res: FastifyReply) {
   const { address } = req.query;
   if (!address || typeof address !== "string") {
     throw new Error("Address is required");
@@ -27,27 +27,25 @@ export async function feesWtfHandler(req: CustomRequest) {
   const url = `https://fees.wtf/?address=${address}`;
 
   const browser = await puppeteerLaunch();
-  const page = await browser.newPage();
+  try {
+    const page = await browser.newPage();
 
-  console.log("==goto", url);
+    req.log.info("opening %s", url);
 
-  await page.goto(url, { waitUntil: "networkidle2" });
+    await page.goto(url, { waitUntil: "networkidle2" });
 
-  await page.waitForFunction(() => {
-    const value = document.getElementById("gasFeeTotal")?.innerText;
-    return value && value !== "🤔";
-  }, {});
+    await page.waitForFunction(() => {
+      const value = document.getElementById("gasFeeTotal")?.innerText;
+      return value && value !== "🤔";
+    }, {});
 
-  console.log("==done waiting");
+    req.log.info("done waiting");
 
-  const promMetrics = await extractMetrics(page, address);
-  // console.log("==promMetrics", promMetrics);
-
-  // console.log("==done");
-
-  await browser.close();
-
-  return promMetrics.join("\n");
+    const promMetrics = await extractMetrics(page, address);
+    return promMetrics.join("\n");
+  } finally {
+    await browser.close();
+  }
 }
 
 async function extractMetrics(page: puppeteer.Page, address: string) {
