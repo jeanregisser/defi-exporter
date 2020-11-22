@@ -4,6 +4,7 @@ import { apyVisionHandler } from "./apyVision";
 import { poolsVisionHandler } from "./poolsVision";
 
 const port = process.env.PORT || 3000;
+const address = process.env.NODE_ENV !== "production" ? "localhost" : "::";
 
 const server = fastify({
   logger: {
@@ -15,7 +16,7 @@ server.get("/poolsVision", poolsVisionHandler);
 server.get("/apyVision", apyVisionHandler);
 server.get("/feesWtf", feesWtfHandler);
 
-server.listen(port, (err) => {
+server.listen(port, address, (err) => {
   if (err) {
     console.error(err);
     process.exit(1);
