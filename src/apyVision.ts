@@ -8,7 +8,7 @@ type CustomRequest = FastifyRequest<{
   Querystring: { address: any };
 }>;
 
-namespace LiquidityVisionResponse {
+namespace ApyVisionResponse {
   export interface Root {
     address: string;
     totalValueUsd: number;
@@ -82,14 +82,14 @@ namespace LiquidityVisionResponse {
   }
 }
 
-export async function liquidityVisionHandler(req: CustomRequest) {
+export async function apyVisionHandler(req: CustomRequest) {
   const { address } = req.query;
   if (!address || typeof address !== "string") {
     throw new Error("Address is required");
   }
-  const url = `https://api.liquidity.vision/portfolio/${address}`;
+  const url = `https://api.apy.vision/portfolio/${address}`;
 
-  const rawData: LiquidityVisionResponse.Root = await got(url).json();
+  const rawData: ApyVisionResponse.Root = await got(url).json();
 
   // req.log.info("==result", rawData);
 

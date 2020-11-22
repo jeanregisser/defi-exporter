@@ -1,6 +1,6 @@
 import fastify from "fastify";
 import { feesWtfHandler } from "./feesWtf";
-import { liquidityVisionHandler } from "./liquidityVision";
+import { apyVisionHandler } from "./apyVision";
 import { poolsVisionHandler } from "./poolsVision";
 
 const port = process.env.PORT || 3000;
@@ -12,7 +12,7 @@ const server = fastify({
 });
 
 server.get("/poolsVision", poolsVisionHandler);
-server.get("/liquidityVision", liquidityVisionHandler);
+server.get("/apyVision", apyVisionHandler);
 server.get("/feesWtf", feesWtfHandler);
 
 server.listen(port, (err) => {
