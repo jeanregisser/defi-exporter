@@ -2,13 +2,9 @@ import { Request, Response } from "express";
 import puppeteer from "puppeteer";
 import snakeCase from "lodash.snakecase";
 import mapValues from "lodash.mapvalues";
-import { getMetrics, parseNumericValue } from "./utils";
+import { getMetrics, parseNumericValue, puppeteerLaunch } from "./utils";
 
 const NAMESPACE = "poolsvision";
-
-function convertToPromMetricName(value: string) {
-  return `poolsvision_${snakeCase(value).replace("_h_", "h_")}`;
-}
 
 export async function poolsVisionHandler(req: Request, res: Response) {
   const { address } = req.query;
@@ -17,23 +13,7 @@ export async function poolsVisionHandler(req: Request, res: Response) {
   }
   const url = `http://pools.vision/user/${address}`;
 
-  const browser = await puppeteer.launch({
-    headless: process.env.NODE_ENV === "production",
-    args: [
-      // Required for Docker version of Puppeteer
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      // This will write shared memory files into /tmp instead of /dev/shm,
-      // because Docker’s default for /dev/shm is 64MB
-      "--disable-dev-shm-usage",
-    ],
-    defaultViewport: {
-      width: 1200,
-      height: 900,
-      // deviceScaleFactor: 1,
-    },
-  });
-
+  const browser = await puppeteerLaunch();
   const page = await browser.newPage();
 
   // console.log("==goto", url);
