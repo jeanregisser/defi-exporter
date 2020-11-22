@@ -1,16 +1,22 @@
-import express from "express";
+import fastify from "fastify";
 import { feesWtfHandler } from "./feesWtf";
 import { liquidityVisionHandler } from "./liquidityVision";
 import { poolsVisionHandler } from "./poolsVision";
 
 const port = process.env.PORT || 3000;
 
-const app = express();
+const server = fastify({
+  logger: true,
+});
 
-app.get("/poolsVision", poolsVisionHandler);
-app.get("/liquidityVision", liquidityVisionHandler);
-app.get("/feesWtf", feesWtfHandler);
+server.get("/poolsVision", poolsVisionHandler);
+server.get("/liquidityVision", liquidityVisionHandler);
+server.get("/feesWtf", feesWtfHandler);
 
-app.listen(port, () =>
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`)
-);
+server.listen(port, (err) => {
+  if (err) {
+    console.error(err);
+    process.exit(1);
+  }
+  // console.log(`Server listening at ${address}`);
+});

@@ -1,11 +1,14 @@
-import { Request, Response } from "express";
+import { FastifyRequest } from "fastify";
 import puppeteer from "puppeteer";
-import snakeCase from "lodash.snakecase";
 import mapValues from "lodash.mapvalues";
 import { getMetrics, parseNumericValue, puppeteerLaunch } from "./utils";
 import BigNumber from "bignumber.js";
 
 const NAMESPACE = "feeswtf";
+
+type CustomRequest = FastifyRequest<{
+  Querystring: { address: any };
+}>;
 
 function customParseNumericValue(value: string | undefined) {
   let result = new BigNumber(parseNumericValue(value || ""));
@@ -16,7 +19,7 @@ function customParseNumericValue(value: string | undefined) {
   return result.toString();
 }
 
-export async function feesWtfHandler(req: Request, res: Response) {
+export async function feesWtfHandler(req: CustomRequest) {
   const { address } = req.query;
   if (!address || typeof address !== "string") {
     throw new Error("Address is required");
@@ -44,7 +47,7 @@ export async function feesWtfHandler(req: Request, res: Response) {
 
   await browser.close();
 
-  res.send(promMetrics.join("\n"));
+  return promMetrics.join("\n");
 }
 
 async function extractMetrics(page: puppeteer.Page, address: string) {

@@ -1,12 +1,15 @@
-import { Request, Response } from "express";
+import { FastifyRequest } from "fastify";
 import puppeteer from "puppeteer";
-import snakeCase from "lodash.snakecase";
 import mapValues from "lodash.mapvalues";
 import { getMetrics, parseNumericValue, puppeteerLaunch } from "./utils";
 
 const NAMESPACE = "poolsvision";
 
-export async function poolsVisionHandler(req: Request, res: Response) {
+type CustomRequest = FastifyRequest<{
+  Querystring: { address: any };
+}>;
+
+export async function poolsVisionHandler(req: CustomRequest) {
   const { address } = req.query;
   if (!address || typeof address !== "string") {
     throw new Error("Address is required");
@@ -20,7 +23,7 @@ export async function poolsVisionHandler(req: Request, res: Response) {
 
   await page.goto(url, { waitUntil: "networkidle2" });
 
-  await page.waitForSelector("tbody > tr > td > a");
+  await page.waitForSelector("tbody > tr > td > a2");
 
   // console.log("==done waiting");
 
@@ -34,7 +37,7 @@ export async function poolsVisionHandler(req: Request, res: Response) {
 
   await browser.close();
 
-  res.send(promMetrics.join("\n"));
+  return promMetrics.join("\n");
 }
 
 async function extractUserPoolMetrics(page: puppeteer.Page, address: string) {

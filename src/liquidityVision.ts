@@ -1,8 +1,12 @@
-import { Request, Response } from "express";
+import { FastifyRequest } from "fastify";
 import got from "got";
 import { getMetrics } from "./utils";
 
 const NAMESPACE = "apyvision";
+
+type CustomRequest = FastifyRequest<{
+  Querystring: { address: any };
+}>;
 
 namespace LiquidityVisionResponse {
   export interface Root {
@@ -78,7 +82,7 @@ namespace LiquidityVisionResponse {
   }
 }
 
-export async function liquidityVisionHandler(req: Request, res: Response) {
+export async function liquidityVisionHandler(req: CustomRequest) {
   const { address } = req.query;
   if (!address || typeof address !== "string") {
     throw new Error("Address is required");
@@ -117,5 +121,5 @@ export async function liquidityVisionHandler(req: Request, res: Response) {
 
   // console.log("==done");
 
-  res.send(promMetrics.join("\n"));
+  return promMetrics.join("\n");
 }
