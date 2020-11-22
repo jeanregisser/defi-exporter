@@ -25,7 +25,7 @@ export async function poolsVisionHandler(req: CustomRequest) {
 
     await page.goto(url, { waitUntil: "networkidle2" });
 
-    await page.waitForSelector("tbody > tr > td > a");
+    await page.waitForSelector("tbody > tr > td > a", { timeout: 60000 });
 
     req.log.info("done waiting");
 
