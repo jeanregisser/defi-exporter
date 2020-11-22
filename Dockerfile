@@ -53,7 +53,8 @@ RUN yarn install --production=true --no-progress
 FROM buildkite/puppeteer:latest as release
 
 # Set environment to production
-ENV NODE_ENV='production'
+ENV NODE_ENV=production \
+    PUPPETEER_DOCKER=true
 
 # Prepare the app directory
 RUN mkdir -p /opt/app;

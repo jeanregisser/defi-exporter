@@ -1,5 +1,6 @@
 import snakeCase from "lodash.snakecase";
 import BigNumber from "bignumber.js";
+import puppeteer from "puppeteer";
 
 type MetricsOptions<T> = {
   namespace: string;
@@ -75,4 +76,26 @@ export function isPresent<T>(t: T | undefined | null | void): t is T {
 
 export function parseNumericValue(value: string) {
   return new BigNumber(value.replace(/[^0-9\.-]+/g, "")).toString();
+}
+
+export async function puppeteerLaunch() {
+  return await puppeteer.launch({
+    headless: process.env.NODE_ENV === "production",
+    args:
+      process.env.PUPPETEER_DOCKER === "true"
+        ? [
+            // Required for Docker version of Puppeteer
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            // This will write shared memory files into /tmp instead of /dev/shm,
+            // because Docker’s default for /dev/shm is 64MB
+            "--disable-dev-shm-usage",
+          ]
+        : undefined,
+    defaultViewport: {
+      width: 1200,
+      height: 900,
+      // deviceScaleFactor: 1,
+    },
+  });
 }
