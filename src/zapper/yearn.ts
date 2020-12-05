@@ -41,7 +41,7 @@ export async function zapperYearnHandler(req: CustomRequest) {
   }
 
   const rawData = await fetchBalance<ZapperYearnResponse.Root>(
-    "iearn",
+    "yearn",
     address
   );
 
