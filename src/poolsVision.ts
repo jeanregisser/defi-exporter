@@ -123,7 +123,7 @@ async function extractUserPoolMetrics(page: puppeteer.Page, address: string) {
       "volume24hUsd",
       "fees24hUsd",
       "annualBal",
-      "totalLiquidityAdjustedUsd",
+      "totalApy",
       "userPoolPercent",
       "poolProviderCount",
     ],
@@ -150,12 +150,12 @@ async function extractBalancerMetrics(page: puppeteer.Page) {
     const totalLiquidityNodes = balancerTable.querySelectorAll<HTMLElement>(
       `[data-label='Total Liquidity']`
     );
-    const totalLiquidityAdjustedNodes = balancerTable.querySelectorAll<
-      HTMLElement
-    >(`[data-label='Total Adj. Liquidity']`);
-    const totalLiquidityAdjustedWithStakingNodes = balancerTable.querySelectorAll<
-      HTMLElement
-    >(`[data-label='Adj. Liquidity w/Staking']`);
+    const totalLiquidityAdjustedNodes = balancerTable.querySelectorAll<HTMLElement>(
+      `[data-label='Total Adj. Liquidity']`
+    );
+    const totalLiquidityAdjustedWithStakingNodes = balancerTable.querySelectorAll<HTMLElement>(
+      `[data-label='Adj. Liquidity w/Staking']`
+    );
     const balMultiplier = balancerTable.querySelectorAll<HTMLElement>(
       `[data-label='BAL Multiplier']`
     );
