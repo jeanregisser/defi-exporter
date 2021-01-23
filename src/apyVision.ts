@@ -15,11 +15,13 @@ namespace ApyVisionResponse {
     totalFeeUsd: number;
     netGainUsd: number;
     netGainPct: number;
-    pairInfos: PairInfo[];
+    userPools: UserPool[];
     priceLastUpdated: number;
+    message: any;
+    allowDownload: boolean;
   }
 
-  export interface PairInfo {
+  export interface UserPool {
     poolProviderName: string;
     name: string;
     address: string;
@@ -44,6 +46,7 @@ namespace ApyVisionResponse {
     tokenCurrentBalance: number;
     tokenCurrentPrice: number;
     tokenUsdGain: number;
+    averageWeightedExecutedPrice: number;
   }
 
   export interface Tx {
@@ -54,6 +57,8 @@ namespace ApyVisionResponse {
     transactionHash: string;
     burnOrMintResult?: BurnOrMintResult;
     contractName: string;
+    gasUsed: number;
+    gasUsedUsd: number;
   }
 
   export interface BurnOrMintResult {
@@ -61,8 +66,8 @@ namespace ApyVisionResponse {
     amounts: Amounts;
     prices: Prices;
     isBurn: boolean;
-    gasUsed: number;
     usdValueAtBlock: number;
+    lpTokenPrice: number;
   }
 
   export interface AmountsMap {}
@@ -99,7 +104,7 @@ export async function apyVisionHandler(req: CustomRequest) {
     labels: { address },
   });
 
-  const poolsMetrics = getMetrics(rawData.pairInfos, {
+  const poolsMetrics = getMetrics(rawData.userPools, {
     namespace: NAMESPACE,
     keys: [
       "totalValueUsd",
