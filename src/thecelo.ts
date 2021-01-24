@@ -11,19 +11,15 @@ type CustomRequest = FastifyRequest<{
 
 namespace TheCeloResponse {
   export interface Root {
+    totalLockedGold: number;
+    nonvotingLockedGold: number;
+    pendingWithdrawals: number;
+    celo: number;
+    cusd: number;
     name: string;
-    lockedGold: string;
-    nonVotingLockedGold: string;
-    pendingWithdrawals: string;
+    type: string;
     metadataURL: string;
-    cgld: string;
-    cusd: string;
   }
-}
-
-function customParseNumericValue(value: string | undefined) {
-  let result = new BigNumber(parseNumericValue(value || "")).dividedBy("1e18");
-  return result.toString();
 }
 
 export async function theCeloHandler(req: CustomRequest) {
@@ -44,11 +40,11 @@ export async function theCeloHandler(req: CustomRequest) {
   // req.log.info("==result", rawData);
 
   const data = {
-    lockedCelo: customParseNumericValue(rawData.lockedGold),
-    nonVotingLockedCelo: customParseNumericValue(rawData.nonVotingLockedGold),
-    pendingWithdrawalCelo: customParseNumericValue(rawData.pendingWithdrawals),
-    celo: customParseNumericValue(rawData.cgld),
-    cusd: customParseNumericValue(rawData.cusd),
+    lockedCelo: rawData.totalLockedGold,
+    nonVotingLockedCelo: rawData.nonvotingLockedGold,
+    pendingWithdrawalCelo: rawData.pendingWithdrawals,
+    celo: rawData.celo,
+    cusd: rawData.cusd,
   };
 
   return getMetrics(data, {
