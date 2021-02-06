@@ -1,17 +1,12 @@
 import got from "got";
 
 const API_KEY = process.env.ZAPPER_API_KEY;
-const API_HOSTS = 8;
-
-let hostIndex = 0;
 
 export async function fetchBalance<T>(
   service: string,
   address: string
 ): Promise<T> {
-  const url = `https://api-${
-    hostIndex++ % API_HOSTS
-  }.zapper.fi/v1/balances/${service}`;
+  const url = `https://api.zapper.fi/v1/balances/${service}`;
 
   try {
     const rawData: T = await got(url, {
