@@ -92,7 +92,7 @@ export async function apyVisionHandler(req: CustomRequest) {
   if (!address || typeof address !== "string") {
     throw new Error("Address is required");
   }
-  const url = `https://api.apy.vision/portfolio/ethCore/${address}`;
+  const url = `https://api.apy.vision/portfolio/1/core/${address}`;
 
   const rawData: ApyVisionResponse.Root = await got(url).json();
 
