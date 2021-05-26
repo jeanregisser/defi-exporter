@@ -9,28 +9,55 @@ type CustomRequest = FastifyRequest<{
 
 namespace ZapperYearnResponse {
   export interface Root {
-    [address: string]: Address[] | undefined;
+    [address: string]: Address | undefined;
   }
 
   export interface Address {
+    products: Product[];
+    meta: Meta[];
+  }
+
+  export interface Product {
+    label: string;
+    assets: Asset[];
+    meta: any[];
+  }
+
+  export interface Asset {
+    type: string;
+    category: string;
+    address: string;
+    decimals: number;
+    tokenAddress: string;
+    contractAddress: string;
     symbol: string;
     label: string;
     img: string;
-    protocolImg: string;
-    protocol: string;
     protocolDisplay: string;
     protocolSymbol: string;
-    underlyingSymbol: string;
-    vaultToken: string;
-    address: string;
-    contractAddress: string;
-    tokenAddress: string;
-    isVault: boolean;
-    isBlocked: boolean;
-    canStake: boolean;
+    protocol: string;
+    balance: number;
+    balanceRaw: string;
+    balanceUSD: number;
+    price: number;
+    pricePerShare: number;
     canDeposit: boolean;
+    tokens: Token[];
+  }
+
+  export interface Token {
+    address: string;
+    symbol: string;
+    decimals: number;
+    img: string;
     balance: number;
     balanceUSD: number;
+  }
+
+  export interface Meta {
+    label: string;
+    value: number;
+    type: string;
   }
 }
 
@@ -45,7 +72,9 @@ export async function zapperYearnHandler(req: CustomRequest) {
     address
   );
 
-  const addressData = (rawData[address] || []).filter((val) => val.balance > 0);
+  const addressData = rawData[address]!.products.flatMap(
+    (product) => product.assets
+  );
 
   const metrics = getMetrics(addressData, {
     namespace: NAMESPACE,

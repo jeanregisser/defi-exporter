@@ -9,81 +9,40 @@ type CustomRequest = FastifyRequest<{
 
 namespace ZapperTokensResponse {
   export interface Root {
-    [address: string]: Address[] | undefined;
+    [address: string]: Address | undefined;
   }
 
   export interface Address {
-    address: string;
-    tokenAddress: string;
-    decimals: number;
-    img: string;
+    products: Product[];
+    meta: Meta[];
+  }
+
+  export interface Product {
     label: string;
+    assets: Asset[];
+    meta: any[];
+  }
+
+  export interface Asset {
+    type: string;
+    category: string;
+    address: string;
     symbol: string;
+    decimals: number;
+    label: string;
+    img: string;
+    hide: boolean;
+    canExchange: boolean;
+    price: number;
     balance: number;
     balanceRaw: string;
     balanceUSD: number;
-    price: number;
-    isStaked: boolean;
-    canStake: boolean;
-    hide: boolean;
-    canExchange: boolean;
-    lpRewards?: LpRewards;
-    protocolImg?: string;
-    stakedBalance?: number;
-    stakedBalanceRaw?: string;
-    stakedBalanceUSD?: number;
-    rewardBalance?: number;
-    rewardBalanceRaw?: string;
-    rewardBalanceUSD?: number;
-    rewardToken?: string;
   }
 
-  export interface LpRewards {
-    name: string;
-    protocol: string;
-    protocolImg: string;
-    contractAddress: string;
-    rewardAddress: string;
-    rewardTokenAddress: string;
-    canStake: boolean;
-    rewardToken: string;
-    abi: Abi[];
-    isGeyser?: boolean;
-    methods: Methods;
-    isSingleToken?: boolean;
-  }
-
-  export interface Abi {
-    constant?: boolean;
-    inputs: Input[];
-    name: string;
-    outputs?: Output[];
-    payable?: boolean;
-    stateMutability?: string;
+  export interface Meta {
+    label: string;
+    value: number;
     type: string;
-    signature: string;
-    anonymous?: boolean;
-  }
-
-  export interface Input {
-    name: string;
-    type: string;
-    indexed?: boolean;
-    internalType?: string;
-  }
-
-  export interface Output {
-    name: string;
-    type: string;
-    internalType?: string;
-  }
-
-  export interface Methods {
-    balance: string;
-    earn: string;
-    stake: string;
-    claim: string;
-    exit: string;
   }
 }
 
@@ -98,7 +57,7 @@ export async function zapperTokensHandler(req: CustomRequest) {
     address
   );
 
-  const addressData = (rawData[address] || []).filter((val) => val.balance > 0);
+  const addressData = rawData[address]!.products[0].assets;
 
   const metrics = getMetrics(addressData, {
     namespace: NAMESPACE,
@@ -106,7 +65,7 @@ export async function zapperTokensHandler(req: CustomRequest) {
     labels: { address },
     // labelKeys: ["poolProviderName", "name", "address"],
     labelMappings: {
-      tokenAddress: "tokenAddress",
+      address: "tokenAddress",
       symbol: "tokenName",
     },
   });

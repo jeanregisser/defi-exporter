@@ -6,7 +6,7 @@ export async function fetchBalance<T>(
   service: string,
   address: string
 ): Promise<T> {
-  const url = `https://api.zapper.fi/v1/balances/${service}`;
+  const url = `https://api.zapper.fi/v1/protocols/${service}/balances`;
 
   try {
     const rawData: T = await got(url, {

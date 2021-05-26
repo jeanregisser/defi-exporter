@@ -9,88 +9,55 @@ type CustomRequest = FastifyRequest<{
 
 namespace ZapperUniswapV2Response {
   export interface Root {
-    [address: string]: Address[] | undefined;
+    [address: string]: Address | undefined;
   }
 
   export interface Address {
+    products: Product[];
+    meta: Meta[];
+  }
+
+  export interface Product {
+    label: string;
+    assets: Asset[];
+    meta: any[];
+  }
+
+  export interface Asset {
+    type: string;
+    category: string;
     address: string;
     tokenAddress: string;
-    exchangeAddress: string;
-    contractAddress: string;
-    value: string;
+    decimals: number;
     label: string;
     symbol: string;
     protocol: string;
     protocolDisplay: string;
     protocolSymbol: string;
     balance: number;
+    balanceRaw: string;
     balanceUSD: number;
     tokens: Token[];
     share: number;
     supply: number;
-    pricePerToken: number;
-    canStake: boolean;
-    isBlocked: boolean;
-    lpRewards?: LpRewards;
-    rewardAddress?: string;
-    stakedBalance?: number;
-    rewardBalance?: number;
-    rewardBalanceUSD?: number;
-    rewardToken?: string;
-    isStaked?: boolean;
+    price: number;
   }
 
   export interface Token {
     address: string;
+    decimals: number;
     symbol: string;
     reserve: number;
     price: number;
     balance: number;
     balanceUSD: number;
-    noImage?: boolean;
+    noImage: boolean;
   }
 
-  export interface LpRewards {
-    name: string;
-    contractAddress: string;
-    rewardAddress: string;
-    rewardTokenAddress: string;
-    canStake: boolean;
-    rewardToken: string;
-    abi: Abi[];
-    methods: Methods;
-  }
-
-  export interface Abi {
-    inputs: Input[];
-    payable?: boolean;
-    stateMutability?: string;
+  export interface Meta {
+    label: string;
+    value: number;
     type: string;
-    anonymous?: boolean;
-    name?: string;
-    signature?: string;
-    constant?: boolean;
-    outputs?: Output[];
-  }
-
-  export interface Input {
-    indexed?: boolean;
-    internalType: string;
-    name: string;
-    type: string;
-  }
-
-  export interface Output {
-    internalType: string;
-    name: string;
-    type: string;
-  }
-
-  export interface Methods {
-    balance: string;
-    stake: string;
-    claim: string;
-    exit: string;
   }
 }
 
@@ -104,7 +71,9 @@ export async function zapperUniswapV2Handler(req: CustomRequest) {
     address
   );
 
-  const addressData = (rawData[address] || []).filter((val) => val.balance > 0);
+  const addressData = rawData[address]!.products.flatMap((product) =>
+    product.assets.filter((asset) => asset.type === "pool")
+  );
 
   const metrics = getMetrics(addressData, {
     namespace: NAMESPACE,

@@ -9,14 +9,41 @@ type CustomRequest = FastifyRequest<{
 
 namespace ZapperTokenSetsResponse {
   export interface Root {
-    [address: string]: TokenSet[] | undefined;
+    [address: string]: Address | undefined;
   }
 
-  export interface TokenSet {
+  export interface Address {
+    products: Product[];
+    meta: Meta[];
+  }
+
+  export interface Product {
+    label: string;
+    assets: Asset[];
+    meta: any[];
+  }
+
+  export interface Asset {
+    address: string;
+    symbol: string;
+    decimals: number;
     label: string;
     img: string;
+    price: number;
+    type: string;
+    category: string;
+    protocol: string;
+    protocolDisplay: string;
+    protocolSymbol: string;
     balance: number;
+    balanceRaw: string;
     balanceUSD: number;
+  }
+
+  export interface Meta {
+    label: string;
+    value: number;
+    type: string;
   }
 }
 
@@ -31,7 +58,9 @@ export async function zapperTokenSetsHandler(req: CustomRequest) {
     address
   );
 
-  const addressData = (rawData[address] || []).filter((val) => val.balance > 0);
+  const addressData = rawData[address]!.products.flatMap(
+    (product) => product.assets
+  );
 
   const metrics = getMetrics(addressData, {
     namespace: NAMESPACE,

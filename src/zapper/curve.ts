@@ -9,43 +9,54 @@ type CustomRequest = FastifyRequest<{
 
 namespace ZapperCurveResponse {
   export interface Root {
-    [address: string]: Address[] | undefined;
+    [address: string]: Address | undefined;
   }
 
   export interface Address {
+    products: Product[];
+    meta: Meta[];
+  }
+
+  export interface Product {
+    label: string;
+    assets: Asset[];
+    meta: any[];
+  }
+
+  export interface Asset {
+    type: string;
+    category: string;
+    address: string;
+    tokenAddress: string;
+    decimals: number;
+    label: string;
+    symbol: string;
+    share: number;
+    supply: number;
+    tokens: Token[];
     protocol: string;
     protocolSymbol: string;
     protocolDisplay: string;
-    label: string;
-    name: string;
-    symbol: string;
-    address: string;
-    exchangeAddress: string;
-    gaugeAddress: string;
-    tokenAddress: string;
-    proxyAddress: string;
-    depositAddress: string;
-    canStake: boolean;
-    isStaked: boolean;
-    isBlocked: boolean;
-    stakedBalance: number;
-    rewardBalance: number;
-    pricePerToken: number;
-    share: number;
+    price: number;
     balance: number;
+    balanceRaw: string;
     balanceUSD: number;
-    supply: number;
-    tokens: Token[];
   }
 
   export interface Token {
+    decimals: number;
     address: string;
     symbol: string;
     balance: number;
     balanceUSD: number;
     reserve: number;
-    yPrice: number;
     price: number;
+  }
+
+  export interface Meta {
+    label: string;
+    value: number;
+    type: string;
   }
 }
 
@@ -60,7 +71,9 @@ export async function zapperCurveHandler(req: CustomRequest) {
     address
   );
 
-  const addressData = (rawData[address] || []).filter((val) => val.balance > 0);
+  const addressData = rawData[address]!.products.flatMap((product) =>
+    product.assets.filter((asset) => asset.type === "pool")
+  );
 
   const metrics = getMetrics(addressData, {
     namespace: NAMESPACE,

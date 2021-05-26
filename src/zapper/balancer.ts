@@ -13,40 +13,52 @@ namespace ZapperBalancerResponse {
   }
 
   export interface Address {
-    pools: Pool[];
-    claimable: any[];
+    products: Product[];
+    meta: Meta[];
   }
 
-  export interface Pool {
+  export interface Product {
+    label: string;
+    assets: Asset[];
+    meta: any[];
+  }
+
+  export interface Asset {
+    type: string;
+    category: string;
+    address: string;
+    tokenAddress: string;
+    decimals: number;
+    symbol: string;
+    label: string;
+    share: number;
+    supply: number;
     protocol: string;
     protocolDisplay: string;
     protocolSymbol: string;
-    address: string;
-    contractAddress: string;
-    tokenAddress: string;
-    exchangeAddress: string;
-    symbol: string;
-    label: string;
+    price: number;
     balance: number;
-    share: number;
-    supply: number;
-    tokens: Token[];
+    balanceRaw: string;
     balanceUSD: number;
-    pricePerToken: number;
-    canStake: boolean;
-    isBlocked: boolean;
-    isStaked: boolean;
+    tokens: Token[];
   }
 
   export interface Token {
     price: number;
     address: string;
+    decimals: number;
     symbol: string;
-    reserve: string;
+    reserve: number;
     balance: number;
     balanceUSD: number;
     weight: number;
     isCToken: boolean;
+  }
+
+  export interface Meta {
+    label: string;
+    value: number;
+    type: string;
   }
 }
 
@@ -61,8 +73,8 @@ export async function zapperBalancerHandler(req: CustomRequest) {
     address
   );
 
-  const addressData = (rawData[address]?.pools || []).filter(
-    (val) => val.balance > 0
+  const addressData = rawData[address]!.products.flatMap((product) =>
+    product.assets.filter((asset) => asset.type === "pool")
   );
 
   const metrics = getMetrics(addressData, {
