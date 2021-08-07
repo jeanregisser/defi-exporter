@@ -33,6 +33,7 @@ export async function fetchSupportedBalances(address: string) {
       },
     }
   ).json();
+
   return response;
 }
 
@@ -41,21 +42,16 @@ export async function fetchBalance<T>(
   address: string,
   network?: string
 ): Promise<T> {
-  const url = `https://api.zapper.fi/v1/protocols/${protocol}/balances`;
-
-  try {
-    const rawData: T = await got(url, {
+  const rawData: T = await got(
+    `https://api.zapper.fi/v1/protocols/${protocol}/balances`,
+    {
       searchParams: {
         api_key: API_KEY,
         "addresses[]": address,
         network,
       },
-    }).json();
+    }
+  ).json();
 
-    return rawData;
-  } catch (error) {
-    // Augment error object so the url is logged too (options is not enumerable and not logged by default)
-    error.url = error.options.url;
-    throw error;
-  }
+  return rawData;
 }

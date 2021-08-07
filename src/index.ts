@@ -20,6 +20,20 @@ server.get("/feesWtf", feesWtfHandler);
 server.get("/zapper", zapperHandler);
 server.get("/thecelo", theCeloHandler);
 
+// @ts-ignore
+const originalErrorHandler = server.errorHandler;
+
+server.setErrorHandler(function (error, request, reply) {
+  // Augment error object so the url from got is logged too (options is not enumerable and not logged by default)
+  // @ts-ignore
+  if (error?.options?.url) {
+    // @ts-ignore
+    error.url = error.options.url;
+  }
+
+  return originalErrorHandler(error, request, reply);
+});
+
 server.listen(port, address, (err) => {
   if (err) {
     console.error(err);
