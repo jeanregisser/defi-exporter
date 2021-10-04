@@ -57,12 +57,12 @@ export async function zapperHandler(req: CustomRequest) {
 
   const promises = [];
 
-  for (const { network, protocols } of supportedBalances) {
-    for (const { protocol } of protocols) {
+  for (const { network, apps } of supportedBalances) {
+    for (const { appId } of apps) {
       promises.push(
         (async () => {
           const rawData = await fetchBalance<ZapperBalanceResponse.Root>(
-            protocol,
+            appId,
             address,
             network
           );
@@ -74,7 +74,7 @@ export async function zapperHandler(req: CustomRequest) {
           const metrics = getMetrics(addressData, {
             namespace: NAMESPACE,
             keys: ["balance", "balanceUSD"],
-            labels: { network, protocol, address },
+            labels: { network, appId, address },
             labelMappings: {
               address: "assetAddress",
               symbol: "assetName",

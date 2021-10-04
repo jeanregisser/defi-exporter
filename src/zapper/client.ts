@@ -7,19 +7,19 @@ namespace ZapperSupportedBalancesResponse {
 
   export interface Network {
     network: string;
-    protocols: Protocol[];
+    apps: App[];
   }
 
-  export interface Protocol {
-    protocol: string;
+  export interface App {
+    appId: string;
     meta: Meta;
   }
 
   export interface Meta {
+    label: string;
+    img: string;
     tags: string[];
     supportedActions: string[];
-    label?: string;
-    img?: string;
   }
 }
 
