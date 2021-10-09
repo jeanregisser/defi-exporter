@@ -58,6 +58,7 @@ export async function zapperHandler(req: CustomRequest) {
   const promises = [];
 
   for (const { network, apps } of supportedBalances) {
+    let seenAddresses = new Set();
     for (const { appId } of apps) {
       promises.push(
         (async () => {
@@ -71,7 +72,14 @@ export async function zapperHandler(req: CustomRequest) {
             (product) => product.assets
           );
 
-          const metrics = getMetrics(addressData, {
+          // Filter out duplicate assets (for some reason the API sometimes returns the same asset with different types)
+          const uniqueData = addressData.filter(({ address }) => {
+            return seenAddresses.has(address)
+              ? false
+              : seenAddresses.add(address);
+          });
+
+          const metrics = getMetrics(uniqueData, {
             namespace: NAMESPACE,
             keys: ["balance", "balanceUSD"],
             labels: { network, appId, address },
