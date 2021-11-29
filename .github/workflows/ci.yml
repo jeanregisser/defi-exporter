@@ -23,7 +23,7 @@ jobs:
       - name: Build and export to Docker
         uses: docker/build-push-action@v2
         with:
-          context: .
+          # context: .
           load: true
           tags: ${{ env.TEST_TAG }}
       - name: E2E Test
