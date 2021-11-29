@@ -2,7 +2,10 @@ name: ci
 
 on:
   push:
-    branches: main
+    branches: test-run-e2e
+
+env:
+  TEST_TAG: ${{ github.repository }}:test
 
 jobs:
   main:
@@ -17,11 +20,24 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
-        id: docker_build
+      - name: Build and export to Docker
         uses: docker/build-push-action@v2
         with:
-          push: true
-          tags: ${{ github.repository }}:latest
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+          context: .
+          load: true
+          tags: ${{ env.TEST_TAG }}
+      - name: E2E Test
+        run: |
+          docker run --rm ${{ env.TEST_TAG }}
+          yarn
+          yarn test:e2e
+      # - name: Build and push
+      #   id: docker_build
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: .
+      #     # platforms: linux/amd64,linux/arm64
+      #     push: true
+      #     tags: ${{ github.repository }}:latest
+      # - name: Image digest
+      #   run: echo ${{ steps.docker_build.outputs.digest }}
