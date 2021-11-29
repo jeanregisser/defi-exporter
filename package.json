@@ -19,7 +19,7 @@
     "puppeteer": "5.5.0"
   },
   "devDependencies": {
-    "@types/jest": "^27.0.3",
+    "@types/jest": "27.0.3",
     "@types/lodash.mapvalues": "4.6.6",
     "@types/lodash.snakecase": "4.1.6",
     "@types/puppeteer": "5.4.4",
