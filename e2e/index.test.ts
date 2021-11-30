@@ -58,3 +58,14 @@ describe("GET /thecelo", () => {
     expect(parsed.length).toBeGreaterThan(0);
   });
 });
+
+describe("GET /coingecko", () => {
+  it("responds with prometheus metrics", async () => {
+    const response = await client.get("coingecko", {
+      searchParams: { address: CELO_TEST_ADDRESS },
+    });
+    expect(response.statusCode).toBe(200);
+    const parsed = parsePrometheusTextFormat(response.body);
+    expect(parsed.length).toBeGreaterThan(0);
+  });
+});

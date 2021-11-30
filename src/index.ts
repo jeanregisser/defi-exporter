@@ -4,6 +4,7 @@ import { apyVisionHandler } from "./apyVision";
 import { poolsVisionHandler } from "./poolsVision";
 import { zapperHandler } from "./zapper/zapper";
 import { theCeloHandler } from "./thecelo";
+import { coinGeckoHandler } from "./coingecko";
 
 const port = process.env.PORT || 3000;
 const address = process.env.NODE_ENV !== "production" ? "localhost" : "::";
@@ -19,6 +20,7 @@ server.get("/apyVision", apyVisionHandler);
 server.get("/feesWtf", feesWtfHandler);
 server.get("/zapper", zapperHandler);
 server.get("/thecelo", theCeloHandler);
+server.get("/coingecko", coinGeckoHandler);
 
 // @ts-ignore
 const originalErrorHandler = server.errorHandler;

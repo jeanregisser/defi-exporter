@@ -5,6 +5,7 @@ import puppeteer from "puppeteer";
 type MetricsOptions<T> = {
   namespace: string;
   keys: Array<keyof T>;
+  keyMappings?: Partial<Record<keyof T, string>>;
   labels?: Record<string, string>;
   labelKeys?: Array<keyof T>;
   labelMappings?: Partial<Record<keyof T, string>>;
@@ -24,7 +25,14 @@ function getMetricsFromArray<T>(arr: T[], options: MetricsOptions<T>) {
 
 function getMetricsFromObject<T>(
   val: T,
-  { namespace, keys, labels, labelKeys, labelMappings }: MetricsOptions<T>
+  {
+    namespace,
+    keys,
+    keyMappings,
+    labels,
+    labelKeys,
+    labelMappings,
+  }: MetricsOptions<T>
 ) {
   const dynamicLabels: Record<string, any> = {};
 
@@ -41,13 +49,19 @@ function getMetricsFromObject<T>(
     ...labels,
   });
 
-  const keysSet = new Set(keys);
+  const keysSet = new Set([
+    ...keys,
+    ...(Object.keys(keyMappings ?? {}) as Array<keyof T>),
+  ]);
   return Object.entries(val)
     .map(([key, value]) => {
       if (!keysSet.has(key as keyof T)) {
         return null;
       }
-      const formattedKey = convertToPromMetricName(key, namespace);
+      const formattedKey = convertToPromMetricName(
+        keyMappings?.[key as keyof T] || key,
+        namespace
+      );
       return `${formattedKey}\{${formattedLabels}\} ${value}`;
     })
     .filter(isPresent);
