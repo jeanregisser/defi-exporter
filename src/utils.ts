@@ -58,6 +58,9 @@ function getMetricsFromObject<T>(
       if (!keysSet.has(key as keyof T)) {
         return null;
       }
+      if (value === null || value === undefined) {
+        return null; // filter out null/undefined value not parsed by prometheus
+      }
       const formattedKey = convertToPromMetricName(
         keyMappings?.[key as keyof T] || key,
         namespace
