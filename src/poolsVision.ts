@@ -1,4 +1,4 @@
-import { FastifyRequest } from "fastify";
+import { FastifyPluginAsync, FastifyRequest } from "fastify";
 import puppeteer from "puppeteer";
 import mapValues from "lodash.mapvalues";
 import { getMetrics, parseNumericValue, puppeteerLaunch } from "./utils";
@@ -9,7 +9,7 @@ type CustomRequest = FastifyRequest<{
   Querystring: { address: any };
 }>;
 
-export async function poolsVisionHandler(req: CustomRequest) {
+async function poolsVisionHandler(req: CustomRequest) {
   const { address } = req.query;
   if (!address || typeof address !== "string") {
     throw new Error("Address is required");
@@ -61,9 +61,8 @@ async function extractUserPoolMetrics(page: puppeteer.Page, address: string) {
     const annualBalNodes = poolsTable.querySelectorAll<HTMLElement>(
       `[data-label='Annual BAL']`
     );
-    const totalApyNodes = poolsTable.querySelectorAll<HTMLElement>(
-      `[data-label='APY']`
-    );
+    const totalApyNodes =
+      poolsTable.querySelectorAll<HTMLElement>(`[data-label='APY']`);
     const userPoolPctNodes = poolsTable.querySelectorAll<HTMLElement>(
       `[data-label='User %']`
     );
@@ -73,10 +72,8 @@ async function extractUserPoolMetrics(page: puppeteer.Page, address: string) {
 
     const pools = [];
     for (let i = 0; i < poolAddressNodes.length; i++) {
-      const [
-        totalLiquidityUsd,
-        totalLiquidityAdjustedUsd,
-      ] = totalLiquidityNodes[i].innerText.trim().split("\n");
+      const [totalLiquidityUsd, totalLiquidityAdjustedUsd] =
+        totalLiquidityNodes[i].innerText.trim().split("\n");
 
       const href = poolAddressNodes[i].getAttribute("href") || "";
       const id = href.split("/").pop() || "";
@@ -150,12 +147,14 @@ async function extractBalancerMetrics(page: puppeteer.Page) {
     const totalLiquidityNodes = balancerTable.querySelectorAll<HTMLElement>(
       `[data-label='Total Liquidity']`
     );
-    const totalLiquidityAdjustedNodes = balancerTable.querySelectorAll<HTMLElement>(
-      `[data-label='Total Adj. Liquidity']`
-    );
-    const totalLiquidityAdjustedWithStakingNodes = balancerTable.querySelectorAll<HTMLElement>(
-      `[data-label='Adj. Liquidity w/Staking']`
-    );
+    const totalLiquidityAdjustedNodes =
+      balancerTable.querySelectorAll<HTMLElement>(
+        `[data-label='Total Adj. Liquidity']`
+      );
+    const totalLiquidityAdjustedWithStakingNodes =
+      balancerTable.querySelectorAll<HTMLElement>(
+        `[data-label='Adj. Liquidity w/Staking']`
+      );
     const balMultiplier = balancerTable.querySelectorAll<HTMLElement>(
       `[data-label='BAL Multiplier']`
     );
@@ -165,8 +164,10 @@ async function extractBalancerMetrics(page: puppeteer.Page) {
       volume24hUsd: volume24hNodes[0].innerText.trim(),
       fees24hUsd: fees24hFeeNodes[0].innerText.trim(),
       totalLiquidityUsd: totalLiquidityNodes[0].innerText.trim(),
-      totalLiquidityAdjustedUsd: totalLiquidityAdjustedNodes[0].innerText.trim(),
-      totalLiquidityAdjustedWithStakingUsd: totalLiquidityAdjustedWithStakingNodes[0].innerText.trim(),
+      totalLiquidityAdjustedUsd:
+        totalLiquidityAdjustedNodes[0].innerText.trim(),
+      totalLiquidityAdjustedWithStakingUsd:
+        totalLiquidityAdjustedWithStakingNodes[0].innerText.trim(),
       balMultiplier: balMultiplier[0].innerText.trim(),
     };
   });
@@ -186,3 +187,9 @@ async function extractBalancerMetrics(page: puppeteer.Page) {
     ],
   });
 }
+
+const handler: FastifyPluginAsync = async (fastify, options) => {
+  fastify.get("/poolsVision", poolsVisionHandler);
+};
+
+export default handler;

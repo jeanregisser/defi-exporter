@@ -1,4 +1,4 @@
-import { FastifyRequest } from "fastify";
+import { FastifyPluginAsync, FastifyRequest } from "fastify";
 import { getMetrics } from "../utils";
 import { fetchBalance, fetchSupportedBalances } from "./client";
 import { NAMESPACE } from "./consts";
@@ -47,7 +47,7 @@ namespace ZapperBalanceResponse {
   }
 }
 
-export async function zapperHandler(req: CustomRequest) {
+async function zapperHandler(req: CustomRequest) {
   const { address } = req.query;
   if (!address || typeof address !== "string") {
     throw new Error("Address is required");
@@ -100,3 +100,9 @@ export async function zapperHandler(req: CustomRequest) {
 
   return result.join("\n");
 }
+
+const handler: FastifyPluginAsync = async (fastify, options) => {
+  fastify.get("/zapper", zapperHandler);
+};
+
+export default handler;

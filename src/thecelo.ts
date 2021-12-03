@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import { FastifyRequest } from "fastify";
+import { FastifyPluginAsync, FastifyRequest } from "fastify";
 import got from "got";
 import { getMetrics, parseNumericValue } from "./utils";
 
@@ -22,7 +22,7 @@ namespace TheCeloResponse {
   }
 }
 
-export async function theCeloHandler(req: CustomRequest) {
+async function theCeloHandler(req: CustomRequest) {
   const { address } = req.query;
   if (!address || typeof address !== "string") {
     throw new Error("Address is required");
@@ -59,3 +59,9 @@ export async function theCeloHandler(req: CustomRequest) {
     labels: { address },
   }).join("\n");
 }
+
+const handler: FastifyPluginAsync = async (fastify, options) => {
+  fastify.get("/thecelo", theCeloHandler);
+};
+
+export default handler;

@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import { FastifyRequest } from "fastify";
+import { FastifyPluginAsync, FastifyRequest } from "fastify";
 import got from "got";
 import { getMetrics, parseNumericValue } from "./utils";
 
@@ -70,7 +70,7 @@ async function fetchMetrics(page: number) {
   return rawData;
 }
 
-export async function coinGeckoHandler(req: FastifyRequest) {
+async function coinGeckoHandler(req: FastifyRequest) {
   const url = `https://api.coingecko.com/api/v3/coins/markets`;
 
   const allData = await Promise.all(
@@ -106,3 +106,9 @@ export async function coinGeckoHandler(req: FastifyRequest) {
     labelKeys: ["id", "name", "symbol"],
   }).join("\n");
 }
+
+const handler: FastifyPluginAsync = async (fastify, options) => {
+  fastify.get("/coingecko", coinGeckoHandler);
+};
+
+export default handler;

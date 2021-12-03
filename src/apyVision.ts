@@ -1,4 +1,4 @@
-import { FastifyRequest } from "fastify";
+import { FastifyPluginAsync, FastifyRequest } from "fastify";
 import got from "got";
 import { getMetrics } from "./utils";
 
@@ -87,7 +87,7 @@ namespace ApyVisionResponse {
   }
 }
 
-export async function apyVisionHandler(req: CustomRequest) {
+async function apyVisionHandler(req: CustomRequest) {
   const { address } = req.query;
   if (!address || typeof address !== "string") {
     throw new Error("Address is required");
@@ -128,3 +128,9 @@ export async function apyVisionHandler(req: CustomRequest) {
 
   return promMetrics.join("\n");
 }
+
+const handler: FastifyPluginAsync = async (fastify, options) => {
+  fastify.get("/apyVision", apyVisionHandler);
+};
+
+export default handler;

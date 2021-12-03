@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import puppeteer from "puppeteer";
 import mapValues from "lodash.mapvalues";
 import { getMetrics, parseNumericValue, puppeteerLaunch } from "./utils";
@@ -19,7 +19,7 @@ function customParseNumericValue(value: string | undefined) {
   return result.toString();
 }
 
-export async function feesWtfHandler(req: CustomRequest, res: FastifyReply) {
+async function feesWtfHandler(req: CustomRequest, res: FastifyReply) {
   const { address } = req.query;
   if (!address || typeof address !== "string") {
     throw new Error("Address is required");
@@ -85,3 +85,9 @@ async function extractMetrics(page: puppeteer.Page, address: string) {
     ],
   });
 }
+
+const handler: FastifyPluginAsync = async (fastify, options) => {
+  fastify.get("/feesWtf", feesWtfHandler);
+};
+
+export default handler;
