@@ -1,10 +1,10 @@
 import fastify from "fastify";
-import feesWtfHandler from "./feesWtf";
-import apyVisionHandler from "./apyVision";
-import poolsVisionHandler from "./poolsVision";
-import zapperHandler from "./zapper/zapper";
-import theCeloHandler from "./thecelo";
-import coinGeckoHandler from "./coingecko";
+import feesWtf from "./feesWtf";
+import apyVision from "./apyVision";
+import poolsVision from "./poolsVision";
+import zapper from "./zapper/zapper";
+import theCelo from "./thecelo";
+import coinGecko from "./coingecko";
 
 const port = process.env.PORT || 3000;
 const address = process.env.NODE_ENV !== "production" ? "localhost" : "::";
@@ -15,12 +15,12 @@ const server = fastify({
   },
 });
 
-server.register(poolsVisionHandler);
-server.register(apyVisionHandler);
-server.register(feesWtfHandler);
-server.register(zapperHandler);
-server.register(theCeloHandler);
-server.register(coinGeckoHandler);
+server.register(poolsVision);
+server.register(apyVision);
+server.register(feesWtf);
+server.register(zapper);
+server.register(theCelo);
+server.register(coinGecko);
 
 // @ts-ignore
 const originalErrorHandler = server.errorHandler;
