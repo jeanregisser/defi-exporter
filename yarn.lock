@@ -505,6 +505,11 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
+"@sinclair/typebox@^0.23.1":
+  version "0.23.1"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.23.1.tgz#14a945aa26a41a875a219db00b293c0bbe4fb804"
+  integrity sha512-XsmyWfps86gFmZhK97HDesbCe/pR+8qf/VveZaADI6oCk0cHGq6WeKdUHM/a8NeSetv/vpUf19ubwU34C2PVWw==
+
 "@sindresorhus/is@^4.0.0":
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-4.2.0.tgz#667bfc6186ae7c9e0b45a08960c551437176e1ca"

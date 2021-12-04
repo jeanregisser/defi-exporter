@@ -13,6 +13,14 @@ const server = fastify({
   logger: {
     prettyPrint: process.env.NODE_ENV !== "production",
   },
+  ajv: {
+    customOptions: {
+      // The Ajv default configuration in Fastify doesn't support coercing array parameters in querystring.
+      // This will coerce one parameter to a single element in array
+      // Example: http://localhost:3000/?ids=1 will be accepted when ids is expected to be an array
+      coerceTypes: "array",
+    },
+  },
 });
 
 server.register(poolsVision);

@@ -2,12 +2,9 @@ import BigNumber from "bignumber.js";
 import { FastifyPluginAsync, FastifyRequest } from "fastify";
 import got from "got";
 import { getMetrics, parseNumericValue } from "./utils";
+import { Static, Type } from "@sinclair/typebox";
 
 const NAMESPACE = "thecelo";
-
-type CustomRequest = FastifyRequest<{
-  Querystring: { address: any };
-}>;
 
 namespace TheCeloResponse {
   export interface Root {
@@ -22,11 +19,7 @@ namespace TheCeloResponse {
   }
 }
 
-async function theCeloHandler(req: CustomRequest) {
-  const { address } = req.query;
-  if (!address || typeof address !== "string") {
-    throw new Error("Address is required");
-  }
+async function theCeloHandler(address: string) {
   const url = `https://thecelo.com/api/?method=account&address=${address}`;
 
   const rawData: TheCeloResponse.Root = await got(url, {
@@ -60,8 +53,28 @@ async function theCeloHandler(req: CustomRequest) {
   }).join("\n");
 }
 
+const QuerystringSchema = Type.Object({
+  addresses: Type.Array(Type.String()),
+});
+
 const handler: FastifyPluginAsync = async (fastify, options) => {
-  fastify.get("/thecelo", theCeloHandler);
+  fastify.get<{ Querystring: Static<typeof QuerystringSchema> }>(
+    "/thecelo",
+    {
+      schema: {
+        querystring: QuerystringSchema,
+        response: {
+          200: {
+            type: "string",
+          },
+        },
+      },
+    },
+    async (req, rep) => {
+      const result = await Promise.all(req.query.addresses.map(theCeloHandler));
+      return result.join("\n");
+    }
+  );
 };
 
 export default handler;
