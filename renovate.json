@@ -2,7 +2,7 @@
   "extends": ["config:base"],
   "npm": {
     "stabilityDays": 3
-  }
+  },
   "packageRules": [
     {
       "matchDepTypes": ["devDependencies"],
