@@ -3,4 +3,11 @@
   "npm": {
     "stabilityDays": 3
   }
+  "packageRules": [
+    {
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true,
+      "automergeType": "branch"
+    }
+  ]
 }
