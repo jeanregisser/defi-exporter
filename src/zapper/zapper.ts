@@ -10,6 +10,10 @@ type CustomRequest = FastifyRequest<{
 // Generic balance response (different protocols have more fields
 namespace ZapperBalanceResponse {
   export interface Root {
+    balances: Balances;
+  }
+
+  export interface Balances {
     [address: string]: Address | undefined;
   }
 
@@ -38,6 +42,12 @@ namespace ZapperBalanceResponse {
     balance: number;
     balanceRaw: string;
     balanceUSD: number;
+    displayProps: DisplayProps;
+  }
+
+  export interface DisplayProps {
+    label: string;
+    images: string[];
   }
 
   export interface Meta {
@@ -68,8 +78,12 @@ async function zapperHandler(req: CustomRequest) {
             network
           );
 
-          const addressData = rawData[address]!.products.flatMap(
-            (product) => product.assets
+          const addressData = rawData.balances[address]!.products.flatMap(
+            (product) =>
+              product.assets.map((asset) => ({
+                ...asset,
+                label: asset.symbol || asset.displayProps.label,
+              }))
           );
 
           // Filter out duplicate assets (for some reason the API sometimes returns the same asset with different types)
@@ -85,7 +99,7 @@ async function zapperHandler(req: CustomRequest) {
             labels: { network, appId, address },
             labelMappings: {
               address: "assetAddress",
-              symbol: "assetName",
+              label: "assetName",
               type: "assetType",
             },
           });

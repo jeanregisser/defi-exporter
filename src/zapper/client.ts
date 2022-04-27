@@ -25,7 +25,7 @@ namespace ZapperSupportedBalancesResponse {
 
 export async function fetchSupportedBalances(address: string) {
   const response: ZapperSupportedBalancesResponse.Root = await got(
-    `https://api.zapper.fi/v1/protocols/balances/supported`,
+    `https://api.zapper.fi/v2/apps/balances/supported`,
     {
       searchParams: {
         api_key: API_KEY,
@@ -38,12 +38,12 @@ export async function fetchSupportedBalances(address: string) {
 }
 
 export async function fetchBalance<T>(
-  protocol: string,
+  appId: string,
   address: string,
   network?: string
 ): Promise<T> {
   const rawData: T = await got(
-    `https://api.zapper.fi/v1/protocols/${protocol}/balances`,
+    `https://api.zapper.fi/v2/apps/${appId}/balances`,
     {
       searchParams: {
         api_key: API_KEY,
