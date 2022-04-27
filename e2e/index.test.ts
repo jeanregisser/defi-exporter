@@ -25,7 +25,8 @@ describe("GET /zapper", () => {
   });
 });
 
-describe("GET /feesWtf", () => {
+// FIXME
+describe.skip("GET /feesWtf", () => {
   it("responds with prometheus metrics", async () => {
     const response = await client.get("feesWtf", {
       searchParams: { address: ETHEREUM_TEST_ADDRESS },
@@ -49,7 +50,8 @@ describe("GET /apyVision", () => {
   });
 });
 
-describe("GET /thecelo", () => {
+// FIXME
+describe.skip("GET /thecelo", () => {
   describe("with a single address", () => {
     it("responds with prometheus metrics", async () => {
       const response = await client.get("thecelo", {
