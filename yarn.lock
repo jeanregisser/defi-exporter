@@ -637,10 +637,10 @@
   dependencies:
     "@types/lodash" "*"
 
-"@types/lodash.snakecase@4.1.6":
-  version "4.1.6"
-  resolved "https://registry.yarnpkg.com/@types/lodash.snakecase/-/lodash.snakecase-4.1.6.tgz#85f2b68f67b36c39875f26484b3a78b158ebf060"
-  integrity sha512-qGTf27ncTRUhSwvxD0hzYFmelmTrzEBGvBigrLyx6PRN1rKuy0ZEK+A3X3QnW7k+CwEjIJeAM6XBN4Ay6F03IQ==
+"@types/lodash.snakecase@4.1.7":
+  version "4.1.7"
+  resolved "https://registry.yarnpkg.com/@types/lodash.snakecase/-/lodash.snakecase-4.1.7.tgz#2a1ca7cbc08b63e7c3708f6291222e69b0d3216d"
+  integrity sha512-nv9M+JJokFyfZ9QmaWVXZu2DfT40K0GictZaA8SwXczp3oCzMkjp7PtvUBQyvdoG9SnlCpoRXZDIVwQRzJbd9A==
   dependencies:
     "@types/lodash" "*"
 
