@@ -1,0 +1,59 @@
+// This file configures Renovate.
+// See: https://docs.renovatebot.com/configuration-options/
+// This is a JSON5 (https://json5.org) file which supports comments and unquoted keys.
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  // See https://docs.renovatebot.com/presets-config/#configbase
+  extends: ["config:base"],
+  // UTC is already the default, but for clarity we explicitly set it here
+  timezone: "UTC",
+  // Ignore hourly limit from the base preset
+  ignorePresets: [":prHourlyLimit2"],
+  // Bump version ranges instead of pinning since we use lock files
+  rangeStrategy: "bump",
+  // Set a status check pending for 3 days from release timestamp to guard against unpublishing
+  stabilityDays: 3,
+  // Automerge with a schedule
+  automerge: true,
+  automergeSchedule: ["after 7:00 before 14:00 every weekday except on Friday"],
+  // Dedupe dependencies
+  postUpdateOptions: ["yarnDedupeFewer"],
+  // Labels applied to the PR
+  labels: ["renovate", "{{manager}}"],
+  // The order of objects in the packageRules array does matter,
+  // in the sense that rules declared later (towards the end of the array)
+  // overwrite values of an also-matching rule declared earlier.
+  packageRules: [
+    // Group devDependencies updates
+    {
+      matchDepTypes: ["devDependencies"],
+      groupName: "devDependencies",
+      // Schedule this once a week since they can have frequent updates
+      extends: ["schedule:earlyMondays"],
+    },
+
+    // Group test packages (jest, etc)
+    {
+      extends: ["packages:test"],
+      groupName: "test packages",
+    },
+
+    // Group linters (eslint, etc)
+    {
+      extends: ["packages:linters"],
+      groupName: "linters",
+    },
+
+    // Group updates for prettier packages
+    {
+      matchPackagePatterns: ["^prettier"],
+      groupName: "prettier packages",
+    },
+
+    // Group typescript packages
+    {
+      matchPackagePatterns: ["^typescript"],
+      groupName: "typescript packages",
+    },
+  ],
+}
