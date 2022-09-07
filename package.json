@@ -16,7 +16,7 @@
     "got": "11.8.5",
     "lodash.mapvalues": "4.6.0",
     "lodash.snakecase": "4.1.1",
-    "pino-pretty": "7.6.1",
+    "pino-pretty": "9.1.0",
     "puppeteer": "13.7.0"
   },
   "devDependencies": {
