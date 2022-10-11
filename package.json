@@ -12,7 +12,7 @@
   "dependencies": {
     "@sinclair/typebox": "0.24.44",
     "bignumber.js": "9.1.0",
-    "fastify": "4.7.0",
+    "fastify": "4.8.1",
     "got": "11.8.5",
     "lodash.mapvalues": "4.6.0",
     "lodash.snakecase": "4.1.1",
