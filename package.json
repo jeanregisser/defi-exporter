@@ -17,7 +17,7 @@
     "lodash.mapvalues": "4.6.0",
     "lodash.snakecase": "4.1.1",
     "pino-pretty": "9.1.1",
-    "puppeteer": "19.1.0"
+    "puppeteer": "19.2.0"
   },
   "devDependencies": {
     "@types/jest": "29.2.0",
