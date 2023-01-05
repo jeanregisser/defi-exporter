@@ -13,7 +13,7 @@
     "@sinclair/typebox": "0.25.16",
     "bignumber.js": "9.1.1",
     "fastify": "4.11.0",
-    "got": "11.8.5",
+    "got": "11.8.6",
     "lodash.mapvalues": "4.6.0",
     "lodash.snakecase": "4.1.1",
     "pino-pretty": "9.1.1",
