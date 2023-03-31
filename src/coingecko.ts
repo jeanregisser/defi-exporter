@@ -5,7 +5,7 @@ import { getMetrics, parseNumericValue } from "./utils";
 
 const NAMESPACE = "coingecko";
 
-const PAGE_COUNT = 4;
+const PAGE_COUNT = 3;
 const PER_PAGE = 250; // current max accepted by coingecko
 
 namespace CoinGeckoResponse {
