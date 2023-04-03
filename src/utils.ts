@@ -11,7 +11,10 @@ type MetricsOptions<T> = {
   labelMappings?: Partial<Record<keyof T, string>>;
 };
 
-export function getMetrics<T>(val: T | T[], options: MetricsOptions<T>) {
+export function getMetrics<T extends {}>(
+  val: T | T[],
+  options: MetricsOptions<T>
+) {
   if (Array.isArray(val)) {
     return getMetricsFromArray(val, options);
   }
@@ -19,11 +22,14 @@ export function getMetrics<T>(val: T | T[], options: MetricsOptions<T>) {
   return getMetricsFromObject(val, options);
 }
 
-function getMetricsFromArray<T>(arr: T[], options: MetricsOptions<T>) {
+function getMetricsFromArray<T extends {}>(
+  arr: T[],
+  options: MetricsOptions<T>
+) {
   return arr.flatMap((val) => getMetricsFromObject(val, options));
 }
 
-function getMetricsFromObject<T>(
+function getMetricsFromObject<T extends {}>(
   val: T,
   {
     namespace,
