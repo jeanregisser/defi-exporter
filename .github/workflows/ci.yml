@@ -26,7 +26,7 @@ jobs:
           tags: ${{ env.TEST_TAG }}
       - name: E2E Test
         run: |
-          docker run -d -p 127.0.0.1:3000:3000 --rm --env ZAPPER_API_KEY=${{ secrets.ZAPPER_API_KEY }} ${{ env.TEST_TAG }}
+          docker run -d -p 127.0.0.1:3000:3000 -p [::1]:3000:3000 --rm --env ZAPPER_API_KEY=${{ secrets.ZAPPER_API_KEY }} ${{ env.TEST_TAG }}
           yarn
           yarn test:e2e
       - name: Login to DockerHub
