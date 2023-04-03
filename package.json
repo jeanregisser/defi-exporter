@@ -12,6 +12,7 @@
   "dependencies": {
     "@sinclair/typebox": "0.25.21",
     "bignumber.js": "9.1.1",
+    "eventsource": "^2.0.2",
     "fastify": "4.12.0",
     "got": "11.8.6",
     "lodash.mapvalues": "4.6.0",
@@ -20,6 +21,7 @@
     "puppeteer": "19.2.0"
   },
   "devDependencies": {
+    "@types/eventsource": "^1.1.11",
     "@types/jest": "29.4.0",
     "@types/lodash.mapvalues": "4.6.7",
     "@types/lodash.snakecase": "4.1.7",

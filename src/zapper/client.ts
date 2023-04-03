@@ -1,3 +1,4 @@
+import EventSource from "eventsource";
 import got from "got";
 
 const API_KEY = process.env.ZAPPER_API_KEY;
@@ -54,4 +55,48 @@ export async function fetchBalance<T>(
   ).json();
 
   return rawData;
+}
+
+export async function fetchBalances<T>(address: string): Promise<T[]> {
+  const url = `https://api.zapper.fi/v2/balances?addresses[]=${address}`;
+  const eventSourceDict = {
+    withCredentials: true,
+    headers: {
+      "Content-Type": "text/event-stream",
+      "User-Agent": "Mozilla/5.0",
+      Authorization: `Basic ${Buffer.from(`${API_KEY}:`, "binary").toString(
+        "base64"
+      )}`,
+    },
+  };
+
+  const allData: T[] = [];
+
+  return new Promise((resolve, reject) => {
+    const eventSource = new EventSource(url, eventSourceDict);
+
+    eventSource.addEventListener("open", () => {
+      console.log("Opened");
+    });
+
+    eventSource.addEventListener("balance", ({ data }) => {
+      const parsedDatas = JSON.parse(data);
+      allData.push(parsedDatas);
+    });
+
+    eventSource.addEventListener("end", () => {
+      eventSource.close();
+      resolve(allData);
+    });
+
+    eventSource.addEventListener("error", (event) => {
+      reject(
+        new Error(
+          `Error fetching balances from Zapper: ${
+            (event as any).message || event
+          }`
+        )
+      );
+    });
+  });
 }

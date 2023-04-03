@@ -1,59 +1,124 @@
 import { FastifyPluginAsync, FastifyRequest } from "fastify";
-import { getMetrics } from "../utils";
-import { fetchBalance, fetchSupportedBalances } from "./client";
+import { getMetrics, isPresent } from "../utils";
+import { fetchBalances } from "./client";
 import { NAMESPACE } from "./consts";
 
 type CustomRequest = FastifyRequest<{
   Querystring: { address: any };
 }>;
 
-// Generic balance response (different protocols have more fields
-namespace ZapperBalanceResponse {
+// Generic balance response (different apps have more fields
+namespace ZapperBalancesResponse {
   export interface Root {
-    balances: Balances;
+    appId: string;
+    network: string;
+    addresses: string[];
+    balance: Balance;
+    totals: Total[];
+    errors: any[];
+    app?: App;
   }
 
-  export interface Balances {
-    [address: string]: Address | undefined;
+  export interface Balance {
+    deposits: Deposits;
+    debt: Debt;
+    vesting: Vesting;
+    wallet: Wallet;
+    claimable: Claimable;
+    locked: Locked;
+    nft: Nft;
   }
 
-  export interface Address {
-    products: Product[];
-    meta: Meta[];
+  export interface Deposits {}
+
+  export interface Debt {}
+
+  export interface Vesting {}
+
+  export interface Wallet {
+    [address: string]: Asset | undefined;
   }
 
-  export interface Product {
-    label: string;
-    assets: Asset[];
-    meta: any[];
+  export interface Claimable {}
+
+  export interface Locked {}
+
+  export interface Nft {}
+
+  export interface Total {
+    key: string;
+    type: string;
+    network: string;
+    balanceUSD: number;
+  }
+
+  export interface App {
+    appId: string;
+    network: string;
+    data: Asset[];
+    displayProps: AppDisplayProps;
+    meta: Meta;
   }
 
   export interface Asset {
-    type: string;
-    category: string;
+    key: string;
+    appId: string;
     address: string;
-    symbol: string;
-    decimals: number;
-    label: string;
-    img: string;
-    hide: boolean;
-    canExchange: boolean;
-    price: number;
-    balance: number;
-    balanceRaw: string;
+    network: string;
     balanceUSD: number;
+    metaType: string;
     displayProps: DisplayProps;
+    type: string;
+    contractType: string;
+    context: Context;
+    breakdown: Asset[];
   }
 
   export interface DisplayProps {
     label: string;
+    secondaryLabel: Label;
+    tertiaryLabel: Label;
+    images: string[];
+    stats: Stat[];
+    info: Info[];
+    balanceDisplayMode: string;
+  }
+
+  export interface AppDisplayProps {
+    appName: string;
     images: string[];
   }
 
-  export interface Meta {
-    label: string;
-    value: number;
+  export interface Label {
     type: string;
+    value: string;
+  }
+
+  export interface Stat {
+    label: Label;
+    value: Value;
+  }
+
+  export interface Value {
+    type: string;
+    value: any;
+  }
+
+  export interface Info {
+    label: Label;
+    value: Value;
+  }
+
+  export interface Context {
+    symbol: string;
+    balance: number;
+    decimals: number;
+    balanceRaw: string;
+    price: number;
+  }
+
+  export interface Meta {
+    total: number;
   }
 }
 
@@ -63,56 +128,33 @@ async function zapperHandler(req: CustomRequest) {
     throw new Error("Address is required");
   }
 
-  const supportedBalances = await fetchSupportedBalances(address);
+  const rawData = await fetchBalances<ZapperBalancesResponse.Root>(address);
 
-  const promises = [];
+  const metrics = rawData.map((data) => {
+    const assets = [
+      ...(data.app?.data || []),
+      ...Object.values(data.balance.wallet),
+    ]
+      .filter(isPresent)
+      .map((app) => ({
+        ...app,
+        label: app.displayProps.label,
+      }));
+    const metrics = getMetrics(assets, {
+      namespace: NAMESPACE,
+      keys: ["balanceUSD"],
+      labels: { network: data.network, appId: data.appId, address },
+      labelMappings: {
+        address: "assetAddress",
+        label: "assetName",
+        type: "assetType",
+      },
+    });
 
-  for (const { network, apps } of supportedBalances) {
-    let seenAddresses = new Set();
-    for (const { appId } of apps) {
-      promises.push(
-        (async () => {
-          const rawData = await fetchBalance<ZapperBalanceResponse.Root>(
-            appId,
-            address,
-            network
-          );
+    return metrics.join("\n");
+  });
 
-          const addressData = rawData.balances[address]!.products.flatMap(
-            (product) =>
-              product.assets.map((asset) => ({
-                ...asset,
-                label: asset.symbol || asset.displayProps.label,
-              }))
-          );
-
-          // Filter out duplicate assets (for some reason the API sometimes returns the same asset with different types)
-          const uniqueData = addressData.filter(({ address }) => {
-            return seenAddresses.has(address)
-              ? false
-              : seenAddresses.add(address);
-          });
-
-          const metrics = getMetrics(uniqueData, {
-            namespace: NAMESPACE,
-            keys: ["balance", "balanceUSD"],
-            labels: { network, appId, address },
-            labelMappings: {
-              address: "assetAddress",
-              label: "assetName",
-              type: "assetType",
-            },
-          });
-
-          return metrics.join("\n");
-        })()
-      );
-    }
-  }
-
-  const result = await Promise.all(promises);
-
-  return result.join("\n");
+  return metrics.join("\n");
 }
 
 const handler: FastifyPluginAsync = async (fastify, options) => {
