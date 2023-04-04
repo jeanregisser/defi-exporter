@@ -10,7 +10,7 @@
     "test:e2e": "jest ./e2e"
   },
   "dependencies": {
-    "@sinclair/typebox": "0.25.21",
+    "@sinclair/typebox": "0.26.8",
     "bignumber.js": "9.1.1",
     "eventsource": "^2.0.2",
     "fastify": "4.12.0",
