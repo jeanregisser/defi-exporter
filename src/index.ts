@@ -11,7 +11,11 @@ const address = process.env.NODE_ENV !== "production" ? "localhost" : "::";
 
 const server = fastify({
   logger: {
-    prettyPrint: process.env.NODE_ENV !== "production",
+    ...(process.env.NODE_ENV !== "production" && {
+      transport: {
+        target: "pino-pretty",
+      },
+    }),
   },
   ajv: {
     customOptions: {
