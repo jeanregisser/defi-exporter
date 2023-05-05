@@ -3,6 +3,10 @@ import got from "got";
 
 const API_KEY = process.env.ZAPPER_API_KEY;
 
+interface ZapperUpdateJobResponse {
+  jobId: string;
+}
+
 namespace ZapperSupportedBalancesResponse {
   export type Root = Network[];
 
@@ -99,4 +103,198 @@ export async function fetchBalances<T>(address: string): Promise<T[]> {
       );
     });
   });
+}
+
+namespace ZapperTokensResponse {
+  export interface Root {
+    [address: string]: AddressToken[];
+  }
+
+  export interface AddressToken {
+    key: string;
+    address: string;
+    network: string;
+    updatedAt: string;
+    token: Token;
+  }
+
+  export interface Token {
+    id: string;
+    networkId: number;
+    address: string;
+    label: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    coingeckoId: string;
+    status: string;
+    hide: boolean;
+    canExchange: boolean;
+    verified: boolean;
+    externallyVerified: boolean;
+    priceUpdatedAt: string;
+    updatedAt: string;
+    createdAt: string;
+    price: number;
+    dailyVolume: number;
+    totalSupply: string;
+    holdersEnabled: boolean;
+    marketCap: number;
+    balance: number;
+    balanceUSD: number;
+    balanceRaw: string;
+  }
+}
+
+export async function fetchTokens(address: string) {
+  const data = await got(`https://api.zapper.fi/v2/balances/tokens`, {
+    searchParams: {
+      api_key: API_KEY,
+      "addresses[]": address,
+    },
+  }).json<ZapperTokensResponse.Root>();
+
+  return data;
+}
+
+namespace ZapperAppsResponse {
+  export type Root = AppData[];
+
+  export interface AppData {
+    key: string;
+    address: string;
+    appId: string;
+    appName: string;
+    appImage: string;
+    network: string;
+    updatedAt: string;
+    balanceUSD: number;
+    products: Product[];
+  }
+
+  export interface Product {
+    label: string;
+    assets: Asset[];
+    meta: Meta[];
+  }
+
+  export interface Asset {
+    key: string;
+    type: string;
+    appId: string;
+    groupId: string;
+    network: string;
+    address: string;
+    // tokens: Token[];
+    symbol?: string;
+    decimals?: number;
+    supply?: number;
+    pricePerShare?: number[];
+    price?: number;
+    dataProps: DataProps;
+    displayProps: DisplayProps;
+    balance?: number;
+    balanceRaw?: string;
+    balanceUSD: number;
+  }
+
+  export interface StatsItem {
+    label: string;
+    value: Value;
+  }
+
+  export interface Value {
+    type: string;
+    value: number;
+  }
+
+  export interface SecondaryLabel {
+    type: string;
+    value: number;
+  }
+
+  export interface DataProps {
+    liquidity?: number;
+    reserves?: number[];
+    apy?: number;
+    isDebt?: boolean;
+    poolId?: string;
+    poolType?: string;
+    fee?: number;
+    weights?: number[];
+    volume?: number;
+    weight?: number[];
+    liquidationThreshold?: number;
+    enabledAsCollateral?: boolean;
+    isActive?: boolean;
+    gaugeType?: string;
+  }
+
+  export interface DisplayProps {
+    label: string;
+    secondaryLabel: any;
+    images: string[];
+    statsItems: StatsItem[];
+    tertiaryLabel?: string;
+    labelDetailed?: string;
+  }
+
+  export interface Meta {
+    label: string;
+    value: number;
+    type: string;
+  }
+}
+
+export async function fetchApps(address: string) {
+  const data = await got(`https://api.zapper.fi/v2/balances/apps`, {
+    searchParams: {
+      api_key: API_KEY,
+      "addresses[]": address,
+    },
+  }).json<ZapperAppsResponse.Root>();
+
+  return data;
+}
+
+export async function updateApps(address: string) {
+  const data = await got
+    .post(`https://api.zapper.fi/v2/balances/apps`, {
+      searchParams: {
+        api_key: API_KEY,
+        "addresses[]": address,
+      },
+    })
+    .json<ZapperUpdateJobResponse>();
+
+  return data;
+}
+
+export async function updateTokens(address: string) {
+  const data = await got
+    .post(`https://api.zapper.fi/v2/balances/tokens`, {
+      searchParams: {
+        api_key: API_KEY,
+        "addresses[]": address,
+      },
+    })
+    .json<ZapperUpdateJobResponse>();
+
+  return data;
+}
+
+interface ZapperJobStatusResponse {
+  jobId: string;
+  status: "active" | "completed" | "unknown";
+}
+
+export async function fetchJobStatus(jobId: string) {
+  const data = await got(`https://api.zapper.fi/v2/balances/job-status`, {
+    searchParams: {
+      api_key: API_KEY,
+      jobId,
+    },
+  }).json<ZapperJobStatusResponse>();
+
+  return data;
 }

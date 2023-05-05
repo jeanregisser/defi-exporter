@@ -1,6 +1,12 @@
 import { FastifyPluginAsync, FastifyRequest } from "fastify";
 import { getMetrics, isPresent } from "../utils";
-import { fetchBalances } from "./client";
+import {
+  fetchApps,
+  fetchJobStatus,
+  fetchTokens,
+  updateApps,
+  updateTokens,
+} from "./client";
 import { NAMESPACE } from "./consts";
 
 type CustomRequest = FastifyRequest<{
@@ -122,23 +128,73 @@ namespace ZapperBalancesResponse {
   }
 }
 
+const JOB_POLLING_INTERVAL_MS = 1_000;
+const JOB_POLLING_MAX_RETRIES = 30;
+
+async function waitForCompletedJob(
+  jobId: string,
+  maxRetries = JOB_POLLING_MAX_RETRIES
+) {
+  let retries = 0;
+  while (retries < maxRetries) {
+    const jobStatus = await fetchJobStatus(jobId);
+    if (jobStatus.status === "completed") {
+      return;
+    }
+    await new Promise((resolve) =>
+      setTimeout(resolve, JOB_POLLING_INTERVAL_MS)
+    );
+    retries++;
+  }
+
+  throw new Error(`Job ${jobId} did not complete in time`);
+}
+
 async function zapperHandler(req: CustomRequest) {
   const { address } = req.query;
   if (!address || typeof address !== "string") {
     throw new Error("Address is required");
   }
 
-  const rawData = await fetchBalances<ZapperBalancesResponse.Root>(address);
+  const updateResponses = await Promise.all([
+    updateTokens(address),
+    updateApps(address),
+  ]);
 
-  const metrics = rawData.map((data) => {
-    const assets = [
-      ...(data.app?.data || []),
-      ...Object.values(data.balance.wallet),
-    ]
-      .filter(isPresent)
-      .map((app) => ({
-        ...app,
-        label: app.displayProps.label,
+  const jobIds = updateResponses.map((res) => res.jobId);
+
+  req.log.info({ jobIds }, "Waiting for jobs to complete");
+
+  await Promise.all(jobIds.map((jobId) => waitForCompletedJob(jobId)));
+
+  const rawTokensData = await fetchTokens(address);
+
+  const tokensMetrics = Object.values(rawTokensData).map((data) => {
+    const tokens = data.map((addressToken) => ({
+      ...addressToken.token,
+      network: addressToken.network,
+    }));
+    const metrics = getMetrics(tokens, {
+      namespace: NAMESPACE,
+      keys: ["balanceUSD"],
+      labels: { appId: "tokens", assetType: "base-token", address },
+      labelKeys: ["network"],
+      labelMappings: {
+        address: "assetAddress",
+        symbol: "assetName",
+      },
+    });
+    return metrics.join("\n");
+  });
+
+  const rawAppsData = await fetchApps(address);
+
+  const appMetrics = rawAppsData.map((data) => {
+    const assets = data.products
+      .flatMap((product) => product.assets)
+      .map((asset) => ({
+        ...asset,
+        label: asset.displayProps.label,
       }));
     const metrics = getMetrics(assets, {
       namespace: NAMESPACE,
@@ -154,7 +210,7 @@ async function zapperHandler(req: CustomRequest) {
     return metrics.join("\n");
   });
 
-  return metrics.join("\n");
+  return [...tokensMetrics, ...appMetrics].join("\n");
 }
 
 const handler: FastifyPluginAsync = async (fastify, options) => {
