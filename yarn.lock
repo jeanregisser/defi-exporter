@@ -685,7 +685,7 @@
     "@types/node" "*"
     "@types/responselike" "*"
 
-"@types/eventsource@^1.1.12":
+"@types/eventsource@^1.1.14":
   version "1.1.14"
   resolved "https://registry.yarnpkg.com/@types/eventsource/-/eventsource-1.1.14.tgz#b5b115b19f3a392a6c29331486bc88dcb4e8a4e2"
   integrity sha512-WiPIkZ5fuhTkeaVaPKbaP6vHuTX9FHnFNTrkSbm+Uf6g4TH3YNbdfw5/1oLzKIWsQRbrvSiByO2nPSxjr5/cgQ==
@@ -736,17 +736,17 @@
   dependencies:
     "@types/node" "*"
 
-"@types/lodash.mapvalues@4.6.7":
-  version "4.6.7"
-  resolved "https://registry.yarnpkg.com/@types/lodash.mapvalues/-/lodash.mapvalues-4.6.7.tgz#a1459b4353c769696b6735f19246753fd25ffc3a"
-  integrity sha512-yGTo9zD60Iw1Q+YBvx4Ad7RDj5rA6EpvYTpVPVsfe6pwHcwDcGChSqL1n2sPBMbCeHJ3R5kcaqpkdlrFe/y4Vg==
+"@types/lodash.mapvalues@4.6.8":
+  version "4.6.8"
+  resolved "https://registry.yarnpkg.com/@types/lodash.mapvalues/-/lodash.mapvalues-4.6.8.tgz#06d9b776841242a8cee3d614bd3020a1dabb712c"
+  integrity sha512-pjyc26C5Ku3hBaqTZnO+eYR7FQ8zyoYTmscqFGsSZSfyeGWVu0K5hvKpytG7CRyaAcks83Z7lHzM5wa3Lk/2eQ==
   dependencies:
     "@types/lodash" "*"
 
-"@types/lodash.snakecase@4.1.7":
-  version "4.1.7"
-  resolved "https://registry.yarnpkg.com/@types/lodash.snakecase/-/lodash.snakecase-4.1.7.tgz#2a1ca7cbc08b63e7c3708f6291222e69b0d3216d"
-  integrity sha512-nv9M+JJokFyfZ9QmaWVXZu2DfT40K0GictZaA8SwXczp3oCzMkjp7PtvUBQyvdoG9SnlCpoRXZDIVwQRzJbd9A==
+"@types/lodash.snakecase@4.1.8":
+  version "4.1.8"
+  resolved "https://registry.yarnpkg.com/@types/lodash.snakecase/-/lodash.snakecase-4.1.8.tgz#2cb47f705b93f8c620842aad4100a6c0b1a56c79"
+  integrity sha512-x1b+z3ZeperNh6sWRvIjJZsM+06ZeBWx155ej6LGe2KjsbqP5GVa8/n33QrrEVXBVLEGubINSHt//8MdC9h+GQ==
   dependencies:
     "@types/lodash" "*"
 
@@ -755,7 +755,7 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.175.tgz#b78dfa959192b01fae0ad90e166478769b215f45"
   integrity sha512-XmdEOrKQ8a1Y/yxQFOMbC47G/V2VDO1GvMRnl4O75M4GW/abC5tnfzadQYkqEveqRM1dEJGFFegfPNA2vvx2iw==
 
-"@types/node@*", "@types/node@^18.18.5":
+"@types/node@*", "@types/node@^18.18.6":
   version "18.18.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.18.6.tgz#26da694f75cdb057750f49d099da5e3f3824cb3e"
   integrity sha512-wf3Vz+jCmOQ2HV1YUJuCWdL64adYxumkrxtc+H1VUQlnQI04+5HtH+qZCOE21lBE7gIrt+CwX2Wv8Acrw5Ak6w==
