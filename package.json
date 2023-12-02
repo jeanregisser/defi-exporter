@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@types/eventsource": "^1.1.15",
-    "@types/jest": "29.5.8",
+    "@types/jest": "29.5.10",
     "@types/lodash.mapvalues": "4.6.9",
     "@types/lodash.snakecase": "4.1.9",
     "@types/node": "^20.10.1",
