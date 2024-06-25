@@ -14,7 +14,7 @@
     "bignumber.js": "9.1.2",
     "eventsource": "^2.0.2",
     "fastify": "4.28.0",
-    "got": "11.8.6",
+    "got": "14.4.1",
     "lodash.mapvalues": "4.6.0",
     "lodash.snakecase": "4.1.1",
     "pino-pretty": "11.2.1",
