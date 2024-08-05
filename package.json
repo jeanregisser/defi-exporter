@@ -18,7 +18,7 @@
     "lodash.mapvalues": "4.6.0",
     "lodash.snakecase": "4.1.1",
     "pino-pretty": "11.2.2",
-    "puppeteer": "19.2.0"
+    "puppeteer": "22.15.0"
   },
   "devDependencies": {
     "@types/eventsource": "^1.1.15",
