@@ -78,10 +78,12 @@ async function coinGeckoHandler(req: FastifyRequest) {
     Array.from({ length: PAGE_COUNT }, (_, i) => fetchMetrics(i + 1))
   );
   const rawData = allData.flat();
-
   // req.log.info("==result", rawData);
 
-  return getMetrics(rawData, {
+  // Filter out invalid data
+  const filteredData = rawData.filter((item) => !item.symbol.includes(`"`));
+
+  return getMetrics(filteredData, {
     namespace: NAMESPACE,
     keys: [
       "market_cap_rank",
