@@ -586,10 +586,10 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@sinclair/typebox@0.34.14":
-  version "0.34.14"
-  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.34.14.tgz#cae482cc36cf5b0d8fe6fa85a15b28e0bc6fb05d"
-  integrity sha512-TJ7Al17j3+by5y2QkTLcF/oBVMbgXBhILVgi9PuwpxQVZZvGh5BFRzWbJPmZVNKpbRLjuMzFuRwR+tdFPqCkvA==
+"@sinclair/typebox@0.34.15":
+  version "0.34.15"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.34.15.tgz#6657330a84be4dba5e00de6dd03a4f86acf59bcc"
+  integrity sha512-xeIzl3h1Znn9w/LTITqpiwag0gXjA+ldi2ZkXIBxGEppGCW211Tza+eL6D4pKqs10bj5z2umBWk5WL6spQ2OCQ==
 
 "@sinclair/typebox@^0.27.8":
   version "0.27.8"
