@@ -6,7 +6,7 @@
 # Note: Make sure the right version of node your application    #
 # requires is set here and in all other build steps.            #
 #################################################################
-FROM node:21.7.3 as build
+FROM node:22.14.0 as build
 
 # Prepare the build directory
 RUN mkdir -p /opt/build;
@@ -33,7 +33,7 @@ RUN yarn install --no-progress && yarn build
 # Note: Make sure the right version of node your application    #
 # requires is set here and in all other build steps.            #
 #################################################################
-FROM node:21.7.3 as dependencies
+FROM node:22.14.0 as dependencies
 
 # Set environment to production
 ENV NODE_ENV='production'
@@ -56,7 +56,7 @@ RUN yarn install --production=true --no-progress
 # Note: Make sure the right version of node your application    #
 # requires is set here and in all other build steps.            #
 #################################################################
-FROM node:21.7.3-slim as release
+FROM node:22.14.0-slim as release
 
 # Based on https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#running-puppeteer-in-docker
 
